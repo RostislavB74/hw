@@ -28,6 +28,7 @@ def select_two(discipline_id: int):
         .limit(1).all()
     return r
 
+
 """
 select s.id, s.fullname, g.grade, g.date_of
 from grades g
@@ -39,6 +40,11 @@ where g.discipline_id = 2
                      inner join students s2 on s2.id = g2.student_id
                    where g2.discipline_id = g.discipline_id
                      and s2.group_id = s.group_id);
+                     subq = (
+    select(func.count(addresses.c.id))
+    .where(users.c.id == addresses.c.user_id)
+    .scalar_subquery()
+)
 
 """
 

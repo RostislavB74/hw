@@ -1,35 +1,39 @@
 from sqlalchemy import func, desc, select, and_
 
-from src.models import Student, Discipline, Grade, Group
+from src.models import Group, Grade, Student, Discipline
 from src.db import session
 
-"""Знайти середній бал у групах з певного предмета."""
-def select_last(group_id, discipline_id):
-    subquery = (select(Grade).join(Group).where(
-        and_(Grade.discipline_id == discipline_id, Group.id == group_id)
-    ))
 
-    r = session.query(Discipline.name,
-                      Group.name,
-                      func.round (func.avg(Grade.grade), 2).label('avg_grade')
-                      ) \
-        .select_from(Grade) \
-        .join(Discipline) \
+def select_one(discipline_id):
+    """
+   Знайти середній бал у групах з певного предмета.
+SELECT i.name0, gr.name, ROUND(AVG(g.grade), 2) AS average_grade
+FROM grades g
+JOIN students s ON s.id = g.student_id
+JOIN items i ON i.id = g.items_id
+JOIN [groups] gr ON gr.id =s.group_id 
+WHERE i.id = 5
+GROUP  BY gr.name, i.name
+ORDER BY average_grade DESC 
+subq = (
+    select(func.count(addresses.c.id))
+    .where(users.c.id == addresses.c.user_id)
+    .scalar_subquery()
+)
+    """
+    result = session.query(Discipline.name, Group.name, func.round(func.avg(Grade.grade), 2)) \
+        .select_from(Grade)\
+        .join(Student)\
+        .where(Student.id == Grade.student_id)\
+        .join(Discipline)\
+        .where(Discipline.id == Grade.discipline_id)\
         .join(Group)\
-        .filter(and_(Discipline.id == discipline_id, Group.id == group_id)) \
-        .order_by(desc(Group.id)) \
+        .where(Group.id == Student.group_id)\
+        .filter(Discipline.id == discipline_id)\
+        .group_by(Group.name, Discipline.name)\
         .all()
-    return r
-if __name__ == '__main__':
-    print(select_last(1, 2))
+    return result
 
-# def select_one():
-#     """
-#     Знайти 5 студентів із найбільшим середнім балом з усіх предметів.
-#     :return: list[dict]
-#     """
-#     result = session.query(Student.fullname, func.round(func.avg(Grade.grade), 2).label('avg_grade')) \
-#         .select_from(Grade).join(Student).group_by(Student.id).order_by(desc('avg_grade')).limit(5).all()
-#     return result
-# if __name__ == '__main__':
-#     print(select_one())
+
+if __name__ == '__main__':
+    print(select_one(1))

@@ -12,5 +12,7 @@ def select_one():
     result = session.query(Student.fullname, func.round(func.avg(Grade.grade), 2).label('avg_grade')) \
         .select_from(Grade).join(Student).group_by(Student.id).order_by(desc('avg_grade')).limit(5).all()
     return result
+
+
 if __name__ == '__main__':
     print(select_one())
