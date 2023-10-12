@@ -1,1 +1,4 @@
 Generic single-database configuration.
+docker run --name hw7 -p 5432:5432 -e POSTGRES_PASSWORD=54321 -d postgres 
+alembic revision --autogenerate -m 'Init'
+alembic upgrade head
