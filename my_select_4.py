@@ -1,6 +1,6 @@
-from sqlalchemy import func, desc, select, and_
+from sqlalchemy import func
 
-from src.models import Group, Grade, Student, Discipline
+from src.models import Grade
 from src.db import session
 
 

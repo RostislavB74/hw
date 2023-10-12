@@ -1,4 +1,4 @@
-from sqlalchemy import func, desc, select, and_
+from sqlalchemy import func, desc
 
 from src.models import Student, Discipline, Grade
 from src.db import session
@@ -18,6 +18,7 @@ def select_2(discipline_id: int):
         .order_by(desc('avg_grade')) \
         .limit(1).all()
     return r
+
 
 if __name__ == '__main__':
     print(select_2(3))
