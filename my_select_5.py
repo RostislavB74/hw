@@ -9,7 +9,7 @@ WHERE t.id  = 15
 ORDER BY t.fullname  """
 
 
-def select_last(teachers_id):
+def select_5(teachers_id):
     result = session.query(Teacher.fullname, Discipline.name) \
         .select_from(Discipline)\
         .join(Teacher)\
@@ -21,4 +21,4 @@ def select_last(teachers_id):
 
 
 if __name__ == '__main__':
-    print(select_last(8))
+    print(select_5(6))

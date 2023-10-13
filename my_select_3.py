@@ -4,7 +4,7 @@ from src.models import Group, Grade, Student, Discipline
 from src.db import session
 
 
-def select_one(discipline_id):
+def select_3(discipline_id):
     """
    Знайти середній бал у групах з певного предмета.
 SELECT i.name0, gr.name, ROUND(AVG(g.grade), 2) AS average_grade
@@ -36,4 +36,4 @@ subq = (
 
 
 if __name__ == '__main__':
-    print(select_one(1))
+    print(select_3(1))

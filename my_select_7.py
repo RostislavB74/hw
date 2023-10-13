@@ -11,7 +11,7 @@ ORDER BY s.fullname
 """
 
 
-def select_last(group_id, items_id):
+def select_7(group_id, items_id):
     result = session.query(Group.name, Student.fullname, Discipline.name, Grade.grade) \
         .select_from(Grade)\
         .join(Student)\
@@ -26,4 +26,4 @@ def select_last(group_id, items_id):
 
 
 if __name__ == '__main__':
-    print(select_last(2, 3))
+    print(select_7(2, 3))

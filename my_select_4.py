@@ -4,7 +4,7 @@ from src.models import Grade
 from src.db import session
 
 
-def select_one():
+def select_4():
     """
    Знайти середній бал на потоці (по всій таблиці оцінок).
    SELECT ROUND(AVG(g.grade), 2) AS average_grade
@@ -19,4 +19,4 @@ ORDER BY average_grade
 
 
 if __name__ == '__main__':
-    print(select_one())
+    print(select_4())
