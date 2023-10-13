@@ -36,12 +36,11 @@ def select_8(teacher_id):
         and_(Grade.discipline_id == Discipline.id, Teacher.id == Discipline.teacher_id)
     ).filter(Teacher.id== teacher_id).scalar_subquery())
     result = session.query(Teacher.fullname, func.round(func.avg(Grade.grade), 2)) \
-    #     .select_from(Grade)\
-    #     .join(Discipline)\
-    #     .join(Teacher)\
-    #     .where(Teacher.id==Discipline.teacher_id)\
-    #     .filter(Teacher.id== teacher_id)\
-    #     .all()
+        .select_from(Grade)\
+        .join(Discipline)\
+        .join(Teacher)\
+        .filter(Teacher.id==subquery)\
+        .all()
         
 
     return result
