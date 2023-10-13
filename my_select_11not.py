@@ -6,32 +6,27 @@ from src.db import session
 
 
 """Середній бал, який певний викладач ставить певному студентові.
-ELECT s.fullname AS 'Студент',  i.name as 'Предмет', t.fullname as 'Викладач', ROUND (AVG(g.grade),2) AS 'Середній бал'
-FROM grades g  
-JOIN students s ON s.id=g.student_id
-JOIN teachers t ON t.id=g.items_id
-JOIN items i ON i.id = g.items_id 
-WHERE s.id = 11 AND i.id =5
---IF WHERE i.id =1
-GROUP BY i.id 
+SELECT students.fullname AS students_fullname, teachers.fullname AS teachers_fullname, ROUND(AVG(grades.grade), 2) AS avg_grade
+FROM grades
+JOIN students ON students.id = grades.student_id
+JOIN disciplines ON disciplines.id = grades.discipline_id
+JOIN teachers ON teachers.id = disciplines.teacher_id
+WHERE students.id = grades.student_id AND disciplines.id = grades.discipline_id AND teachers.id = disciplines.teacher_id AND students.id = %(id_1)s AND disciplines.teacher_id = %(teacher_id_1)s
+GROUP BY students.fullname, teachers.fullname
+ORDER BY students.fullname;
 
-
-ORDER BY s.fullname  ; 
 """
 def select_11(student_id, teacher_id): 
-    result = session.query(Student.fullname, Teacher.fullname, func.round(func.avg(Grade.grade), 2)) \
+    result = session.query(Student.fullname, Teacher.fullname, func.avg(Grade.grade)) \
         .select_from(Grade)\
-        .join(Student)\
-        .where(Student.id == Grade.student_id)\
-        .join(Discipline)\
-        .where(and_(Discipline.id == Grade.discipline_id))\
-        .join(Teacher)\
-        .where(and_(Teacher.id==Discipline.teacher_id))\
-        .all()
-        # .filter(and_(Student.id == student_id, Teacher.id == teacher_id))\
+        .join(Student).where(Student.id == Grade.student_id)\
+        .join(Discipline).where(Discipline.id == Grade.discipline_id)\
+        .join(Teacher).where(Teacher.id==Discipline.teacher_id)\
+        .filter(and_(Student.id == student_id, Discipline.teacher_id == teacher_id))\
+        .group_by(Student.fullname, Teacher.fullname)\
+        .order_by(Student.fullname)
         
     return result
-
 
 if __name__ == '__main__':
     print(select_11(53,10))
