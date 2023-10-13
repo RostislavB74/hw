@@ -11,7 +11,7 @@ FROM grades
 JOIN students ON students.id = grades.student_id
 JOIN disciplines ON disciplines.id = grades.discipline_id
 JOIN teachers ON teachers.id = disciplines.teacher_id
-WHERE students.id = grades.student_id AND disciplines.id = grades.discipline_id AND teachers.id = disciplines.teacher_id AND students.id = %(id_1)s AND disciplines.teacher_id = %(teacher_id_1)s
+WHERE students.id = grades.student_id AND disciplines.id = grades.discipline_id AND teachers.id = disciplines.teacher_id AND students.id = 53 AND disciplines.teacher_id =8
 GROUP BY students.fullname, teachers.fullname
 ORDER BY students.fullname;
 
