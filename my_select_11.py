@@ -17,15 +17,15 @@ ORDER BY students.fullname;
 
 """
 def select_11(student_id, teacher_id): 
-    result = session.query(Student.fullname, Teacher.fullname, func.avg(Grade.grade)) \
+    result = session.query(Student.fullname, Teacher.fullname, (func.round(func.avg(Grade.grade), 2))) \
         .select_from(Grade)\
         .join(Student).where(Student.id == Grade.student_id)\
         .join(Discipline).where(Discipline.id == Grade.discipline_id)\
         .join(Teacher).where(Teacher.id==Discipline.teacher_id)\
         .filter(and_(Student.id == student_id, Discipline.teacher_id == teacher_id))\
         .group_by(Student.fullname, Teacher.fullname)\
-        .order_by(Student.fullname)
-        
+        .order_by(Student.fullname)\
+        .all()
     return result
 
 if __name__ == '__main__':
