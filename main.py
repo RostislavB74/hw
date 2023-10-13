@@ -1,108 +1,57 @@
-from datetime import date, datetime, timedelta
-from random import randint, choice
-import faker
-from sqlalchemy import select
+from src.models import Teacher, Discipline, Student, Group, Grade
+import argparse
 
-from src.models import Teacher, Student, Discipline, Grade, Group
-from src.db import session
-
-
-
-def date_range(start: date, end: date) -> list:
-    result = []
-    current_date = start
-    while current_date <= end:
-        if current_date.isoweekday() < 6:
-            result.append(current_date)
-        current_date += timedelta(1)
-    return result
-
-
-
-def fill_data():
-    # Створюємо списки предметів і груп
-    disciplines = [
-        "Вища математика",
-        "Фізичне виховання та самовдосконалення",
-        "Фізика",
-        "Комп'ютерні технології та програмування",
-        "Ділова українська мова",
-        "Фахова іноземна мова",
-        "Вступ до спеціальності",
-        "Екологія",
-        "Електротехніка та авіоніка",
-        "Теорія механізмів та машин",
-        "Інженерна та комп'ютерна графіка",
-        "Робочі тіла рідинно-газових систем ЛА",
-        "Аналітичні та варіаційні методи",
-        "Філософія",
-        "Аерогідродинаміка та динаміка польоту",
-        "Механіка матеріалів та конструкцій",
-        "Гідравлічна і пневматична автоматика",
-        "Історія України",
-        "Теорія ймовірності"
-    ]
-
-    groups = ["АКФ 101", "АКФ 201", "АКФ 301", "АКФ 401", "АКФ 501",
-              "АКФ 102", "АКФ 202", "АКФ 302", "АКФ 402", "АКФ 502",
-              "АКФ 103", "АКФ 203", "АКФ 303", "АКФ 403", "АКФ 503"
-              ]
-
-    fake = faker.Faker('uk-UA')
-    number_of_teachers = 15
-    number_of_students = 150
-
-    def seed_teachers():
-        for _ in range(number_of_teachers):
+def create_record(args):
+    # Логіка для створення запису в базі даних
+    for _ in range(number_of_teachers):
             teacher = Teacher(fullname=fake.name())
             session.add(teacher)
         session.commit()
 
-    def seed_disciplines():
-        teacher_ids = session.scalars(select(Teacher.id)).all()
-        for discipline in disciplines:
-            session.add(Discipline(name=discipline,
-                        teacher_id=choice(teacher_ids)))
-        session.commit()
 
-    def seed_groups():
-        for group in groups:
-            session.add(Group(name=group))
-        session.commit()
+def read_records(args):
+    # Логіка для відображення записів із бази даних
+    pass
 
-    def seed_students():
-        group_ids = session.scalars(select(Group.id)).all()
-        for _ in range(number_of_students):
-            student = Student(fullname=fake.name(), group_id=choice(group_ids))
-            session.add(student)
-        session.commit()
+def update_record(args):
+    # Логіка для оновлення запису в базі даних
+    pass
 
-    def seed_grades():
-        start_date = datetime.strptime("2022-09-01", "%Y-%m-%d")
-        end_date = datetime.strptime("2023-05-25", "%Y-%m-%d")
-        d_range = date_range(start=start_date, end=end_date)
-        discipline_ids = session.scalars(select(Discipline.id)).all()
-        student_ids = session.scalars(select(Student.id)).all()
+def delete_record(args):
+    # Логіка для видалення запису з бази даних
+    pass
 
-        for d in d_range:  
-            random_id_discipline = choice(discipline_ids)
-            random_ids_student = [choice(student_ids) for _ in range(5)]
-            for student_id in random_ids_student:
-                grade = Grade(
-                    grade=randint(1, 12),
-                    date_of=d,
-                    student_id=student_id,
-                    discipline_id=random_id_discipline,
-                )
-                session.add(grade)
-        session.commit()
+def main():
+    parser = argparse.ArgumentParser(description='CLI програма для виконання CRUD операцій над базою даних.')
+    
+    subparsers = parser.add_subparsers(dest='action', help='Дія для виконання')
+    
+    # Підкоманда для операції create
+    create_parser = subparsers.add_parser('create', help='Створення запису')
+    create_parser.add_argument('-m', '--model', choices=['Teacher', 'Student', 'Discipline', 'Grade', 'Group'], help='Модель для створення')
+    create_parser.set_defaults(func=create_record)
+    
+    # Підкоманда для операції read
+    read_parser = subparsers.add_parser('read', help='Відображення записів')
+    read_parser.add_argument('-m', '--model', choices=['Teacher', 'Student', 'Discipline', 'Grade', 'Group'], help='Модель для відображення')
+    read_parser.set_defaults(func=read_records)
+    
+    # Підкоманда для операції update
+    update_parser = subparsers.add_parser('update', help='Оновлення запису')
+    update_parser.add_argument('-m', '--model', choices=['Teacher', 'Student', 'Discipline', 'Grade', 'Group'], help='Модель для оновлення')
+    update_parser.set_defaults(func=update_record)
+    
+    # Підкоманда для операції delete
+    delete_parser = subparsers.add_parser('delete', help='Видалення запису')
+    delete_parser.add_argument('-m', '--model', choices=['Teacher', 'Student', 'Discipline', 'Grade', 'Group'], help='Модель для видалення')
+    delete_parser.set_defaults(func=delete_record)
+    
+    args = parser.parse_args()
+    
+    if not hasattr(args, 'func'):
+        parser.error('Не вказана дія (create, read, update, delete).')
+    
+    args.func(args)
 
-    seed_teachers()
-    seed_disciplines()
-    seed_groups()
-    seed_students()
-    seed_grades()
-
-
-if __name__ == "__main__":
-    fill_data()
+if __name__ == '__main__':
+    main()
